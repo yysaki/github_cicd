@@ -63,11 +63,11 @@ resource "aws_security_group" "nginx" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "nginx" {
-  security_group_id = aws_security_group.nginx.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 80
-  to_port           = 80
-  ip_protocol       = "tcp"
+  security_group_id            = aws_security_group.nginx.id
+  referenced_security_group_id = aws_security_group.https.id
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
 }
 
 resource "aws_vpc_security_group_egress_rule" "nginx" {
