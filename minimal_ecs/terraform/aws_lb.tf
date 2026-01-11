@@ -102,19 +102,3 @@ resource "aws_lb_target_group" "example" {
   target_type = "ip"
   vpc_id      = aws_vpc.example.id
 }
-
-resource "aws_lb_listener_rule" "example" {
-  listener_arn = aws_lb_listener.https.arn
-  priority     = 100
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.example.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/*"]
-    }
-  }
-}
