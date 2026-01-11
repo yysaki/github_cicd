@@ -15,7 +15,14 @@ resource "aws_ecs_task_definition" "example" {
       name      = "example-container"
       image     = "nginx:latest"
       essential = true
-
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-region        = "ap-northeast-1"
+          awslogs-stream-prefix = "example"
+          awslogs-group         = "/ecs/example"
+        }
+      }
       portMappings = [
         {
           containerPort = 80
