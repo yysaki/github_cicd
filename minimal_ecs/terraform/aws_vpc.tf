@@ -1,3 +1,7 @@
+locals {
+  azs = { for idx, az in slice(data.aws_availability_zones.available.names, 0, 2) : az => idx }
+}
+
 resource "aws_vpc" "example" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
@@ -13,15 +17,15 @@ data "aws_availability_zones" "available" {
 }
 
 resource "aws_subnet" "public" {
-  count = 2
+  for_each = local.azs
 
   vpc_id                  = aws_vpc.example.id
-  cidr_block              = "10.0.${count.index}.0/24"
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  cidr_block              = "10.0.${each.value}.0/24"
+  availability_zone       = each.key
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "public-${count.index}"
+    Name = "public-${each.key}"
   }
 }
 
@@ -43,64 +47,64 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-  count = 2
+  for_each = local.azs
 
-  subnet_id      = aws_subnet.public[count.index].id
+  subnet_id      = aws_subnet.public[each.key].id
   route_table_id = aws_route_table.public.id
 }
 
 resource "aws_subnet" "private" {
-  count = 2
+  for_each = local.azs
 
   vpc_id            = aws_vpc.example.id
-  cidr_block        = "10.0.${count.index + 10}.0/24"
-  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block        = "10.0.${each.value + 10}.0/24"
+  availability_zone = each.key
 
   tags = {
-    Name = "private-${count.index}"
+    Name = "private-${each.key}"
   }
 }
 
 resource "aws_route_table" "private" {
-  count = 2
+  for_each = local.azs
 
   vpc_id = aws_vpc.example.id
 }
 
 resource "aws_route" "private" {
-  count = 2
+  for_each = local.azs
 
-  route_table_id         = aws_route_table.private[count.index].id
-  nat_gateway_id         = aws_nat_gateway.nat_gateway[count.index].id
+  route_table_id         = aws_route_table.private[each.key].id
+  nat_gateway_id         = aws_nat_gateway.nat_gateway[each.key].id
   destination_cidr_block = "0.0.0.0/0"
 }
 
 resource "aws_eip" "nat_gateway" {
-  count = 2
+  for_each = local.azs
 
   domain = "vpc"
 
   tags = {
-    Name = "nat-${count.index}"
+    Name = "nat-${each.key}"
   }
 
   depends_on = [aws_internet_gateway.example]
 }
 
 resource "aws_nat_gateway" "nat_gateway" {
-  count = 2
+  for_each = local.azs
 
-  allocation_id = aws_eip.nat_gateway[count.index].id
-  subnet_id     = aws_subnet.public[count.index].id
+  allocation_id = aws_eip.nat_gateway[each.key].id
+  subnet_id     = aws_subnet.public[each.key].id
 
   tags = {
-    Name = "nat-${count.index}"
+    Name = "nat-${each.key}"
   }
 }
 
 resource "aws_route_table_association" "private" {
-  count = 2
+  for_each = local.azs
 
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private[count.index].id
+  subnet_id      = aws_subnet.private[each.key].id
+  route_table_id = aws_route_table.private[each.key].id
 }
