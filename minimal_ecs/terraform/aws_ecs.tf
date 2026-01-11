@@ -42,9 +42,9 @@ resource "aws_ecs_service" "example" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = aws_subnet.public[*].id
+    assign_public_ip = false
+    subnets          = aws_subnet.private[*].id
     security_groups  = [aws_security_group.nginx.id]
-    assign_public_ip = true
   }
 
   load_balancer {

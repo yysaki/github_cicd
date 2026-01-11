@@ -67,6 +67,37 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.example.id
 }
 
+resource "aws_route" "private" {
+  count = 2
+
+  route_table_id         = aws_route_table.private[count.index].id
+  nat_gateway_id         = aws_nat_gateway.nat_gateway[count.index].id
+  destination_cidr_block = "0.0.0.0/0"
+}
+
+resource "aws_eip" "nat_gateway" {
+  count = 2
+
+  domain = "vpc"
+
+  tags = {
+    Name = "nat-${count.index}"
+  }
+
+  depends_on = [aws_internet_gateway.example]
+}
+
+resource "aws_nat_gateway" "nat_gateway" {
+  count = 2
+
+  allocation_id = aws_eip.nat_gateway[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
+
+  tags = {
+    Name = "nat-${count.index}"
+  }
+}
+
 resource "aws_route_table_association" "private" {
   count = 2
 
