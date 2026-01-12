@@ -20,7 +20,7 @@ resource "aws_subnet" "public" {
   for_each = local.azs
 
   vpc_id                  = aws_vpc.example.id
-  cidr_block              = "10.0.${each.value}.0/24"
+  cidr_block              = "10.0.${each.value * 16}.0/20"
   availability_zone       = each.key
   map_public_ip_on_launch = true
 
@@ -57,7 +57,7 @@ resource "aws_subnet" "private" {
   for_each = local.azs
 
   vpc_id            = aws_vpc.example.id
-  cidr_block        = "10.0.${each.value + 10}.0/24"
+  cidr_block        = "10.1.${each.value * 16}.0/20"
   availability_zone = each.key
 
   tags = {
