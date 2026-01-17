@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy for aws_copilot
 on:
   workflow_dispatch:
     inputs:

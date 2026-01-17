@@ -3,14 +3,8 @@ JQ='.taskDefinition | del (.taskDefinitionArn, .revision, .status, .requiresAttr
 ecr-login:
 	aws ecr get-login-password | docker login --username AWS --password-stdin https://${AWS_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
-create-repo:
-	aws ecr create-repository --repository-name nginx-test
-
 describe-repo:
 	aws ecr describe-repositories
-
-delete-repo:
-	aws ecr delete-repository --repository-name nginx-test --force
 
 build:
 	docker build -t ${AWS_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/nginx-test:v1.0 ../docker

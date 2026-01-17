@@ -13,7 +13,7 @@ resource "aws_ecs_task_definition" "example" {
   container_definitions = jsonencode([
     {
       name      = "example-container"
-      image     = "nginx:latest"
+      image     = "nginx:latest" # ${aws_ecr_repository.example.repository_url}:v1.0"
       essential = true
       logConfiguration = {
         logDriver = "awslogs"

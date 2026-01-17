@@ -1,0 +1,33 @@
+name: Deploy for minimal_ecs
+on:
+  workflow_dispatch:
+env:
+  ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ID }}:role/github-actions
+  SESSION_NAME: gh-oidc-${{ github.run_id }}-${{ github.run_attempt }}
+  ECR_REPOSITORY_URI: ${{ secrets.AWS_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com/nginx-test
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          role-session-name: ${{ env.SESSION_NAME }}
+          aws-region: ap-northeast-1
+      - uses: ./.github/actions/container-build
+        id: build
+        with:
+          ecr-repository-uri: ${{ env.ECR_REPOSITORY_URI }}
+          dockerfile-path: minimal_ecs/docker/
+      - uses: ./.github/actions/container-deploy
+        with:
+          ecs-cluster: example-cluster
+          ecs-service: example-service
+          task-definition: example-task
+          container-name: example-container
+          container-image: ${{ steps.build.outputs.container-image }}
