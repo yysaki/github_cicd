@@ -4,6 +4,7 @@ service: example-service
 service_definition: ecs-service-def.jsonnet
 task_definition: ecs-task-def.jsonnet
 timeout: "10m0s"
+required_version: ">= 2.0.0, < 3"
 
 plugins:
   - name: tfstate
