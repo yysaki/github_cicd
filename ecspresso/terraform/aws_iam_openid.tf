@@ -35,6 +35,11 @@ data "aws_iam_policy_document" "github_actions" {
   statement {
     effect = "Allow"
     actions = [
+      "application-autoscaling:Describe*",
+      "application-autoscaling:Register*",
+      "codedeploy:BatchGet*",
+      "codedeploy:CreateDeployment",
+      "codedeploy:List*",
       "ecr:GetAuthorizationToken",
       "ecr:BatchGetImage",
       "ecr:BatchCheckLayerAvailability",
@@ -43,10 +48,16 @@ data "aws_iam_policy_document" "github_actions" {
       "ecr:InitiateLayerUpload",
       "ecr:PutImage",
       "ecr:UploadLayerPart",
-      "ecs:DescribeTaskDefinition",
-      "ecs:RegisterTaskDefinition",
-      "ecs:UpdateService",
-      "ecs:DescribeServices"
+      "ecr:ListImages",
+      "ecs:*",
+      "elasticloadbalancing:DescribeTargetGroups",
+      "iam:GetRole",
+      "iam:PassRole",
+      "logs:GetLogEvents",
+      "secretsmanager:GetSecretValue",
+      "servicediscovery:GetNamespace",
+      "ssm:GetParameters",
+      "sts:AssumeRole"
     ]
     resources = ["*"]
   }
