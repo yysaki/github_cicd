@@ -2,7 +2,7 @@ resource "aws_lb" "example" {
   name               = "example"
   internal           = false
   load_balancer_type = "application"
-  subnets = values(aws_subnet.public)[*].id
+  subnets            = values(aws_subnet.public)[*].id
 
   security_groups = [
     aws_security_group.https.id,
