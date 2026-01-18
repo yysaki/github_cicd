@@ -62,6 +62,16 @@ data "aws_iam_policy_document" "github_actions" {
       values   = ["ecs-tasks.amazonaws.com"]
     }
   }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["s3:GetObject"]
+    resources = ["${data.aws_s3_bucket.tfstate.arn}/*"]
+  }
+}
+
+data "aws_s3_bucket" "tfstate" {
+  bucket = var.tfstate_s3_bucket
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions" {

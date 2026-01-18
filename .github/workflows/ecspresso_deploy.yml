@@ -37,4 +37,5 @@ jobs:
       - name: ecspresso deploy
         run: ecspresso deploy --config ecspresso/ecspresso/ecspresso.yml
         env:
-          TFSTATE_S3_BUCKET: ${{ secrets.TFSTATE_S3_BUCKET }}
+          AWS_ID: ${{ secrets.AWS_ID }}
+          TF_VAR_tfstate_s3_bucket: ${{ secrets.TF_VAR_tfstate_s3_bucket }}

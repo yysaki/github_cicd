@@ -8,4 +8,4 @@ timeout: "10m0s"
 plugins:
   - name: tfstate
     config:
-      url: "s3://{{ must_env `TFSTATE_S3_BUCKET` }}/ecspresso/terraform.tfstate"
+      url: "s3://{{ must_env `TF_VAR_tfstate_s3_bucket` }}/ecspresso/terraform.tfstate"
