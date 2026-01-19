@@ -1,0 +1,25 @@
+{
+  "name": "github_cicd",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/yysaki/github_cicd#readme",
+  "bugs": {
+    "url": "https://github.com/yysaki/github_cicd/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/yysaki/github_cicd.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "secretlint": "secretlint \"**/*\""
+  },
+  "devDependencies": {
+    "@secretlint/secretlint-rule-preset-recommend": "^11.3.0",
+    "secretlint": "^11.3.0"
+  }
+}
