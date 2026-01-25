@@ -1,0 +1,43 @@
+name: Terraform Apply for moduled
+on:
+  workflow_dispatch:
+    inputs:
+      environment-name:
+        description: Environment name
+        required: true
+        type: environment
+
+env:
+  ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ID }}:role/github-actions-terraform
+  SESSION_NAME: gh-oidc-${{ github.run_id }}-${{ github.run_attempt }}
+  AWS_REGION: ap-northeast-1
+  TF_VERSION: "1.14.3"
+  TF_VAR_hosted_zone_name: ${{ secrets.DOMAIN_NAME }}
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment: ${{ inputs.environment-name }}
+    concurrency: terraform-moduled-${{ inputs.environment-name }}
+    defaults:
+      run:
+        working-directory: moduled/environments/${{ inputs.environment-name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          role-session-name: ${{ env.SESSION_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      - name: Terraform Init
+        run: terraform init -backend-config="bucket=${{ secrets.TF_VAR_TFSTATE_S3_BUCKET }}"
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
