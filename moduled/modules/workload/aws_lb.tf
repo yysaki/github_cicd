@@ -73,6 +73,10 @@ resource "aws_lb_listener" "https" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.example.arn
   }
+
+  depends_on = [
+    aws_acm_certificate_validation.example
+  ]
 }
 
 resource "aws_lb_listener" "http_redirect" {
