@@ -20,7 +20,7 @@ resource "aws_ecs_task_definition" "example" {
         options = {
           awslogs-region        = "ap-northeast-1"
           awslogs-stream-prefix = "example"
-          awslogs-group         = "/ecs/example"
+          awslogs-group         = "/${var.env}-ecs/example"
         }
       }
       portMappings = [
