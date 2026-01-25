@@ -21,7 +21,7 @@ jobs:
       contents: read
       id-token: write
     environment: ${{ inputs.environment-name }}
-    concurrency: terraform-moduled-${{ inputs.environment-name }}
+    concurrency: moduled-${{ inputs.environment-name }}
     defaults:
       run:
         working-directory: moduled/environments/${{ inputs.environment-name }}
