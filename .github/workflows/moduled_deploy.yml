@@ -1,0 +1,46 @@
+name: Deploy for moduled
+on:
+  workflow_dispatch:
+    inputs:
+      environment-name:
+        description: Environment name
+        required: true
+        type: environment
+env:
+  ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ID }}:role/github-actions-ecspresso
+  SESSION_NAME: gh-oidc-${{ github.run_id }}-${{ github.run_attempt }}
+  ECR_REPOSITORY_URI: ${{ secrets.AWS_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com/${{ inputs.environment-name }}-nginx-test
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          role-session-name: ${{ env.SESSION_NAME }}
+          aws-region: ap-northeast-1
+      - uses: aws-actions/amazon-ecr-login@v2
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ${{ env.ECR_REPOSITORY_URI }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=long
+      - uses: docker/build-push-action@v5
+        with:
+          push: true
+          context: moduled/docker/
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - uses: kayac/ecspresso@v2
+      - name: ecspresso deploy
+        run: ecspresso deploy --config moduled/environments/${{ inputs.environment-name }}/ecspresso.yml
+        env:
+          AWS_ID: ${{ secrets.AWS_ID }}
+          TF_VAR_tfstate_s3_bucket: ${{ secrets.TF_VAR_tfstate_s3_bucket }}

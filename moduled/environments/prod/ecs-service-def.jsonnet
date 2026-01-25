@@ -20,7 +20,7 @@
   "launchType": "FARGATE",
   "loadBalancers": [
     {
-      "containerName": "example-container",
+      "containerName": "prod-example-container",
       "containerPort": 80,
       "targetGroupArn": "{{ tfstate `module.workload.aws_lb_target_group.example.arn` }}"
     }
@@ -33,7 +33,7 @@
       ],
       "subnets": [
         "{{ tfstate `module.workload.aws_subnet.private['ap-northeast-1a'].id` }}",
-        "{{ tfstate `module.workload.aws_subnet.private['ap-northeast-1c'].id` }}"
+        "{{ tfstate `module.workload.aws_subnet.private['ap-northeast-1c'].id` }}",
       ]
     }
   },
@@ -41,11 +41,5 @@
   "platformVersion": "LATEST",
   "propagateTags": "NONE",
   "resourceManagementType": "CUSTOMER",
-  "schedulingStrategy": "REPLICA",
-  "tags": [
-    {
-      "key": "Env",
-      "value": "prod"
-    }
-  ]
+  "schedulingStrategy": "REPLICA"
 }
